@@ -21,7 +21,7 @@ namespace TamagotchiProgram
  
         static ConsoleKeyInfo MenCho;
 
-        static double Step1 = 0.5d;
+        static int Step1 = 1;
      //   static int Step2 = 2;
    //     static int Step3 = 3;
             static void Main(string[] args)
