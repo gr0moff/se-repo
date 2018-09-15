@@ -1,0 +1,93 @@
+//by gr0m_off
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Collections;
+using System.ComponentModel;
+
+
+namespace Task2
+{
+
+    class Program
+    {
+        static ConsoleKeyInfo Refresh;
+        static void Main(string[] args)
+        {
+            Console.CursorVisible = false;
+       
+            Console.BackgroundColor = ConsoleColor.Black; 
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Clear();
+
+            Process[] proc = Process.GetProcesses();
+            PerformanceCounter freeRAM = new PerformanceCounter("Memory", "Available MBytes");
+            PerformanceCounter allRAM = new PerformanceCounter("Memory", "Available MBytes");
+            PerformanceCounter totalCPU = new PerformanceCounter("Процессор", "% загруженности процессора", "_Total");
+
+            Console.WriteLine("UserName: {0}\n", Environment.UserName);
+
+            while (true)
+            {
+                printCPU(totalCPU.NextValue());
+                printRAM(freeRAM.NextValue());
+                printTable();
+                for (int i = 0; i < proc.Length; i++)
+                {
+                    Process name = Process.GetProcesses()[i];
+                    PerformanceCounter ramCounter = new PerformanceCounter("Process", "Working Set", name.ProcessName);
+                    PerformanceCounter cpuCounter = new PerformanceCounter("Process", "% Processor Time", name.ProcessName);
+
+                    double RAM = ramCounter.NextValue();
+                    double CPU = cpuCounter.NextValue();
+                    if (RAM / (1024 * 1024) > 1)
+                        Console.WriteLine("| " + proc[i].Id + " | " + proc[i].SessionId + " | " + proc[i].ProcessName + " | " + (RAM / (1024 * 1024)) + " MB | " + (CPU) + " % |"); //proc[i].ProcessName
+                }
+                Console.WriteLine("\n ~~~~~~~PLEASE, PRESS F TO PAY RESPECT AND REFRESH~~~~~~~");
+               
+                Refresh = Console.ReadKey(true);
+
+                if (Refresh.Key == ConsoleKey.F == true)
+                {
+                    System.Threading.Thread.Sleep(100);
+                }
+                Console.Clear();
+            }
+        }
+   
+
+    
+        static void printTable()
+        {
+            Console.Write("| PID  | UID | Процесс   |  ОЗУ  |   ЦП    |\n");
+            Console.Write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        }
+        static void printCPU(double CPU)
+        {
+            double space = 100 - CPU;
+            double temp = CPU;
+            Console.Write("ЗАГРУЗКА ЦП [");
+            for (; temp >= 0; temp--)
+            {
+                Console.Write("|");
+            }
+            for (; space > 0; space--)
+            {
+                Console.Write(" ");
+            }
+            Console.Write("]" + CPU + "%\n\n\n");
+        }
+        static void printRAM(double RAM)
+        {
+            Console.Write("ОЗУ СВОБОДНО: " + RAM + " MB\n\n");
+        }
+       
+    }
+}
+
